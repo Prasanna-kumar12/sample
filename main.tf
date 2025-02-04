@@ -1,25 +1,18 @@
 provider "aws" {
-
+  region = var.aws_region
 }
 
-resource "aws_instance" "new-instance" {
-  ami = 
-  availability_zone = 
-  security_groups = 
-  key_name = 
-  instance_type = 
+module "network" {
+  source = "./network"
 }
 
-resource "aws_internet_gateway" "aws-igw" {
-  vpc_id =
+module "security" {
+  source = "./security"
+  vpc_id = module.network.vpc_id
 }
 
-resource "aws_subnet" "private" {
-  cidr_block = 
-  vpc_id = 
-}
-
-resource "aws_subnet" "public" {
-  cidr_block = 
-  vpc_id = 
+module "instances" {
+  source        = "./instances"
+  subnet_id     = module.network.subnet_id
+  security_group_id = module.security.security_group_id
 }
